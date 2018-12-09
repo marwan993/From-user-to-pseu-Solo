@@ -1,8 +1,21 @@
 const STORE = [
-    {name: "apples", checked: false},
-    {name: "oranges", checked: false},
-    {name: "milk", checked: true},
-    {name: "bread", checked: false}
+    {
+      name: "apples",
+       checked: false,
+      displayCheck: true,
+      },
+    {name: "oranges",
+     checked: false,
+     displayCheck: true,
+    },
+    {name: "milk",
+    checked: true,
+    displayCheck: false,
+  },
+    {name: "bread",
+     checked: false,
+     displayCheck: true,
+    }
   ];
 
   function generateItemElement(item, itemIndex, template){
@@ -22,7 +35,7 @@ const STORE = [
 
   function generateShoppingItemsString(shoppingList){
 
-    const items = shoppingList.map((item,index) => generateItemElement(item,index));
+    const items = shoppingList.filter(item => item['displayCheck'] === true).map((item,index) => generateItemElement(item,index));
     
     return items.join("");
 
@@ -31,6 +44,7 @@ function renderShoppingList() {
     // this function will be responsible for rendering the shopping list in
     // the DOM
 
+    setDisplayStatus()
     const shoppingListItemString = generateShoppingItemsString(STORE)
     $('.js-shopping-list').html(shoppingListItemString);
     console.log();
@@ -38,7 +52,7 @@ function renderShoppingList() {
 
   function addItemToShoppingList(itemName){
       console.log(`Adding ${itemName} to shopping list`);
-      STORE.push({name: itemName, checked: false});
+      STORE.push({name: itemName, checked: false, displayCheck: true});
   }
   
   
@@ -60,6 +74,7 @@ function renderShoppingList() {
   function toggleCheckedForListItem(itemIndex) {
     console.log("Toggling checked property for item at index " + itemIndex);
     STORE[itemIndex].checked = !STORE[itemIndex].checked;
+    
   }
 
   function getItemIndexFromElement(item){
@@ -96,6 +111,52 @@ function renderShoppingList() {
         renderShoppingList();
     })  
   }
+
+  let displayAllByDefault = true;
+
+function setDisplayStatus () {
+  if (displayAllByDefault === true) {
+    displayAll();
+   } else if (displayAllByDefault === false) {
+    displayUnchecked();
+   };
+}
+
+  function displayAll () {
+  for (let i = 0; i < STORE.length; i++) {
+    STORE[i]['displayCheck'] = true;
+    console.log(STORE[i]);
+  };
+}
+
+
+function displayUnchecked () {
+  for (let i = 0; i < STORE.length; i++) {
+    if(STORE[i]['checked'] === false) { 
+      STORE[i]['displayCheck'] = false;
+      console.log(STORE[i]);
+    }
+  };
+}
+
+
+function handleDisplayToggle () {
+  // add event listener to that button
+  $('.display-toggle').click('.display-toggle', function(event) {
+    displayAllByDefault = !displayAllByDefault;
+   renderShoppingList();
+  });
+}
+
+function handleSearchClicked() {
+  $('#js-shopping-search').submit('.search-item', event => {
+    event.preventDefault();
+    const searchItem = $('.search-item').val();
+    console.log(`you are searching for ${searchItem}`);
+    $('.search-item').val('');
+    renderShoppingList();
+  });
+}
   
   // this function will be our callback when the page loads. it's responsible for
   // initially rendering the shopping list, and activating our individual functions
@@ -106,6 +167,8 @@ function renderShoppingList() {
     handleNewItemSubmit();
     handleItemCheckClicked();
     handleDeleteItemClicked();
+    handleDisplayToggle();
+    handleSearchClicked();
   
   }
   
